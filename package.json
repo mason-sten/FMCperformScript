@@ -1,6 +1,6 @@
 {
   "name": "fmcperformscript",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Makes it easier to call FileMaker scripts from a webviewer",
   "main": "index.js",
   "scripts": {
