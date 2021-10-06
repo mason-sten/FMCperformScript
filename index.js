@@ -1,6 +1,11 @@
 import { tryJsonParse } from "./src/tryJsonParse";
 
-export const fmScript = async (scriptOrScriptID, params, timeout = null) => {
+export const fmScript = async (
+  scriptOrScriptID,
+  params,
+  option = 5,
+  timeout = null
+) => {
   FileMaker.PerformScriptWithOption(
     "fm-bridge",
     JSON.stringify({
@@ -8,7 +13,7 @@ export const fmScript = async (scriptOrScriptID, params, timeout = null) => {
       params,
       webviewer: window.FM_WEBVIEWER_NAME,
     }),
-    5
+    option
   );
   return new Promise(function (resolve, reject) {
     //RESOLVE

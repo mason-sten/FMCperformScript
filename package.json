@@ -1,11 +1,19 @@
 {
   "name": "fmcperformscript",
   "version": "1.0.0",
-  "description": "Makes calling FileMaker script easier from a WebViewer",
+  "description": "Makes it easier to call FileMaker scripts from a webviewer",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mason-sten/FMCperformScript.git"
+  },
+  "author": "Mason Stenquist",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mason-sten/FMCperformScript/issues"
+  },
+  "homepage": "https://github.com/mason-sten/FMCperformScript#readme"
 }
