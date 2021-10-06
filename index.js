@@ -1,6 +1,6 @@
 import { tryJsonParse } from "./src/tryJsonParse";
 
-export const fmScript = async (
+const fmScript = async (
   scriptOrScriptID,
   params,
   option = 5,
@@ -30,3 +30,5 @@ export const fmScript = async (
     }
   });
 };
+
+export default fmScript;
