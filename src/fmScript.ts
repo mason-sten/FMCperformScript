@@ -33,7 +33,7 @@ const sendToFmcConnect = (
     params,
     webviewer: window.FM_WEBVIEWER_NAME,
   });
-  if (!FileMaker) {
+  if (typeof FileMaker === "undefined") {
     fetch(
       `fmp://$/${FM_FILENAME}?script=fmc-performscript&param=${paramString}`
     );
@@ -44,6 +44,7 @@ const sendToFmcConnect = (
     FileMaker.PerformScriptWithOption("fmc-performscript", paramString, option);
     return;
   }
+
   if (FileMaker.PerformScript) {
     console.log(
       "FileMaker.PerformScriptWithOption not present, falling back to FileMaker.PerformScript"
