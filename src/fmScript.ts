@@ -1,49 +1,12 @@
 import { tryJsonParse } from "./tryJsonParse";
 
-const runScript = (scriptOrScriptID, params, option) => {
-  const paramString = JSON.stringify({
-    scriptOrScriptID,
-    params,
-    webviewer: window.FM_WEBVIEWER_NAME,
-  });
-  let trys = 0;
-  try {
-    let intervalId = setInterval(() => {
-      if (trys > 10) {
-        clearInterval(intervalId);
-        throw new Error("This can only be run from a web viewer");
-      }
-
-      if (FileMaker) {
-        clearInterval(intervalId);
-      }
-
-      trys++;
-    }, 100);
-    if (FileMaker.PerformScriptWithOption) {
-      FileMaker.PerformScriptWithOption(
-        "fmc-performscript",
-        paramString,
-        option
-      );
-    } else {
-      console.log(
-        "FileMaker.PerformScriptWithOption not present, falling back to FileMaker.PerformScript"
-      );
-      FileMaker.PerformScript("fmc-performscript", paramString);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
 export const fmScript = async (
-  scriptOrScriptID,
-  params,
+  scriptOrScriptID: string | number,
+  params?: any,
   option = 5,
-  timeout = null
-) => {
-  runScript(scriptOrScriptID, params, option);
+  timeout: null | number = null
+): Promise<unknown> => {
+  sendToFmcConnect(scriptOrScriptID, params, option);
   return new Promise(function (resolve, reject) {
     //RESOLVE
     const handleResolve = (results) => resolve(tryJsonParse(results));
@@ -58,4 +21,34 @@ export const fmScript = async (
       setTimeout(() => handleReject({ error: "Timeout" }), timeout);
     }
   });
+};
+
+const sendToFmcConnect = (
+  scriptOrScriptID: string | number,
+  params?: any,
+  option = 5
+) => {
+  const paramString = JSON.stringify({
+    scriptOrScriptID,
+    params,
+    webviewer: window.FM_WEBVIEWER_NAME,
+  });
+  if (!FileMaker) {
+    fetch(
+      `fmp://$/${FM_FILENAME}?script=fmc-performscript&param=${paramString}`
+    );
+    return;
+  }
+
+  if (FileMaker.PerformScriptWithOption) {
+    FileMaker.PerformScriptWithOption("fmc-performscript", paramString, option);
+    return;
+  }
+  if (FileMaker.PerformScript) {
+    console.log(
+      "FileMaker.PerformScriptWithOption not present, falling back to FileMaker.PerformScript"
+    );
+    FileMaker.PerformScript("fmc-performscript", paramString);
+    return;
+  }
 };
