@@ -1,3 +1,4 @@
+import axios from "axios";
 import { tryJsonParse } from "./tryJsonParse";
 
 export const fmScript = async (
@@ -34,8 +35,10 @@ const sendToFmcConnect = (
     webviewer: window.FM_WEBVIEWER_NAME,
   });
   if (typeof FileMaker === "undefined") {
-    fetch(
-      `fmp://$/${FM_FILENAME}?script=fmc-performscript&param=${paramString}`
+    axios.get(
+      `fmp://$/${FM_FILENAME}?script=fmc-performscript&param=${encodeURIComponent(
+        paramString
+      )}`
     );
     return;
   }
