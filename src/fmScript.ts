@@ -1,4 +1,3 @@
-import axios from "axios";
 import { tryJsonParse } from "./tryJsonParse";
 
 export const fmScript = async (
@@ -7,6 +6,12 @@ export const fmScript = async (
   option = 5,
   timeout: null | number = null
 ): Promise<unknown> => {
+  try {
+    await checkForFileMaker();
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
   sendToFmcConnect(scriptOrScriptID, params, option);
   return new Promise(function (resolve, reject) {
     //RESOLVE
@@ -34,14 +39,6 @@ const sendToFmcConnect = (
     params,
     webviewer: window.FM_WEBVIEWER_NAME,
   });
-  if (typeof FileMaker === "undefined") {
-    axios.get(
-      `fmp://$/${FM_FILENAME}?script=fmc-performscript&param=${encodeURIComponent(
-        paramString
-      )}`
-    );
-    return;
-  }
 
   if (FileMaker.PerformScriptWithOption) {
     FileMaker.PerformScriptWithOption("fmc-performscript", paramString, option);
@@ -55,4 +52,21 @@ const sendToFmcConnect = (
     FileMaker.PerformScript("fmc-performscript", paramString);
     return;
   }
+};
+
+const checkForFileMaker = async (): Promise<"SUCCESS" | Error> => {
+  return new Promise((resolve, reject) => {
+    let trys = 0;
+    let id = setInterval(() => {
+      if (typeof FileMaker !== "undefined") {
+        clearInterval(id);
+        resolve("SUCCESS");
+      } else if (trys > 9) {
+        clearInterval(id);
+        reject(new Error("This can only be run from a FileMaker WebViewer"));
+      }
+      console.log(`Attempt #${trys} to invoke FileMaker`);
+      trys++;
+    }, 100);
+  });
 };
