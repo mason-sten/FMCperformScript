@@ -1,6 +1,11 @@
 import { tryJsonParse } from "./tryJsonParse";
 
 const runScript = (scriptOrScriptID, params, option) => {
+  const paramString = JSON.stringify({
+    scriptOrScriptID,
+    params,
+    webviewer: window.FM_WEBVIEWER_NAME,
+  });
   let trys = 0;
   try {
     let intervalId = setInterval(() => {
@@ -18,25 +23,14 @@ const runScript = (scriptOrScriptID, params, option) => {
     if (FileMaker.PerformScriptWithOption) {
       FileMaker.PerformScriptWithOption(
         "fmc-performscript",
-        JSON.stringify({
-          scriptOrScriptID,
-          params,
-          webviewer: window.FM_WEBVIEWER_NAME,
-        }),
+        paramString,
         option
       );
     } else {
       console.log(
         "FileMaker.PerformScriptWithOption not present, falling back to FileMaker.PerformScript"
       );
-      FileMaker.PerformScript(
-        "fmc-performscript",
-        JSON.stringify({
-          scriptOrScriptID,
-          params,
-          webviewer: window.FM_WEBVIEWER_NAME,
-        })
-      );
+      FileMaker.PerformScript("fmc-performscript", paramString);
     }
   } catch (e) {
     console.error(e);
@@ -49,13 +43,7 @@ export const fmScript = async (
   option = 5,
   timeout = null
 ) => {
-  runScript(
-    JSON.stringify({
-      scriptOrScriptID,
-      params,
-    }),
-    option
-  );
+  runScript(scriptOrScriptID, params, option);
   return new Promise(function (resolve, reject) {
     //RESOLVE
     const handleResolve = (results) => resolve(tryJsonParse(results));
